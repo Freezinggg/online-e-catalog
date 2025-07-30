@@ -1,0 +1,33 @@
+# Build results
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+
+# VSCode/VS folders
+.vscode/
+.vs/
+
+# Rider
+.idea/
+
+# ASP.NET
+*.db
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Dotnet
+project.lock.json
+*.swp
+
+# Others
+.env
