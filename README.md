@@ -10,10 +10,10 @@ This is a real-world project as part of my Back-End Developer journey — aiming
 
 - ASP.NET Core (.NET 9)
 - Clean Architecture (API / Application / Domain / Infrastructure)
-- Serilog + Seq (Structured Logging)
+- Serilog + Seq (Structured Logging, easy to use)
 - Docker & Docker Compose
-- GitHub Actions (later)
-- Minimal React UI (optional)
+- GitHub Actions
+- Minimal React UI (Plan, idk if will use other)
 
 ---
 
