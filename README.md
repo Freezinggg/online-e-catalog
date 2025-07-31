@@ -20,7 +20,7 @@ This is a real-world project as part of my Back-End Developer journey — aiming
 ## 📌 Roadmap
 
 - [x] Day 1 – Project setup, folder structure, README, git
-- [ ] Day 2 – API skeleton & Clean Arch wiring
+- [x] Day 2 – API skeleton & Clean Arch wiring
 - [ ] Day 3 – Logging with Serilog + Seq
 - [ ] Day 4 – Basic Product CRUD
 - [ ] Day 5 – Dockerization
