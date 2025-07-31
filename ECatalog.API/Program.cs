@@ -1,4 +1,7 @@
 
+using ECatalog.Infrastructure.Persistence.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace ECatalog.API
 {
     public class Program
@@ -6,10 +9,20 @@ namespace ECatalog.API
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+
 
             // Add services to the container.
+            builder.Services.AddDbContext<CatalogDbContext>(options =>
+            {
+                options.UseNpgsql(connectionString);
+            });
+
 
             builder.Services.AddControllers();
+
+
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
@@ -27,6 +40,8 @@ namespace ECatalog.API
 
 
             app.MapControllers();
+
+            app.MapGet("/", () => "Catalog API up and running.");
 
             app.Run();
         }
