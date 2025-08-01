@@ -19,9 +19,9 @@ This is a real-world project as part of my Back-End Developer journey — aiming
 
 ## 📌 Roadmap
 
-- [x] Day 1 – Project setup, folder structure, README, git
-- [x] Day 2 – API skeleton & Clean Arch wiring
-- [ ] Day 3 – Logging with Serilog + Seq
+- [x] Day 1 – Project setup, folder structure, README, git // Done at 30-July-2025
+- [x] Day 2 – API skeleton & Clean Arch wiring // Done at 31-July-2025
+- [x] Day 3 – Logging with Serilog + Seq // Done at 01-August-2025
 - [ ] Day 4 – Basic Product CRUD
 - [ ] Day 5 – Dockerization
 - [ ] Day 6 – Metrics / Health Checks / Readiness
