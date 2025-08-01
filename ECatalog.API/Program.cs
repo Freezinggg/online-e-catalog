@@ -1,6 +1,10 @@
 
+using ECatalog.API.Middleware;
 using ECatalog.Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using Serilog.Events;
+using Serilog.Formatting.Compact;
 
 namespace ECatalog.API
 {
@@ -8,42 +12,95 @@ namespace ECatalog.API
     {
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            //Set serilog
+            var logPath = Path.Combine(AppContext.BaseDirectory, "Logs", "log-.txt");
 
 
-
-            // Add services to the container.
-            builder.Services.AddDbContext<CatalogDbContext>(options =>
+            try
             {
-                options.UseNpgsql(connectionString);
-            });
+                Log.Information("Starting Online E-Catalog up...");
+                var builder = WebApplication.CreateBuilder(args);
+                var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+                builder.Host.UseSerilog((context, services, configuration) =>
+                {
+                    configuration
+                        .Enrich.FromLogContext()
+                        .Enrich.WithMachineName()
+                        .Enrich.WithThreadId()
+                        .Enrich.WithProcessId()
+                        .Enrich.WithProperty("Service", "CatalogService")
+                        .MinimumLevel.Override("Microsoft", LogEventLevel.Information) // <-- Important: Allow hosting logs
+                        .MinimumLevel.Override("System", LogEventLevel.Warning)
+                        .MinimumLevel.Information()
+                        .WriteTo.Console(new RenderedCompactJsonFormatter())
+                        .WriteTo.Seq("http://localhost:5341")
+                        .WriteTo.File(
+                            new RenderedCompactJsonFormatter(),
+                            path: Path.Combine(AppContext.BaseDirectory, "Logs", "log-.txt"),
+                            rollingInterval: RollingInterval.Day,
+                            retainedFileCountLimit: 7,
+                            fileSizeLimitBytes: 10_000_000,
+                            rollOnFileSizeLimit: true,
+                            shared: true,
+                            flushToDiskInterval: TimeSpan.FromSeconds(1)
+                        );
+                });
+
+                // Add services to the container.
+                builder.Services.AddDbContext<CatalogDbContext>(options =>
+                {
+                    options.UseNpgsql(connectionString);
+                });
 
 
-            builder.Services.AddControllers();
+                builder.Services.AddControllers();
 
+                // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+                builder.Services.AddOpenApi();
 
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
+                var app = builder.Build();
 
-            var app = builder.Build();
+                // Configure the HTTP request pipeline.
+                if (app.Environment.IsDevelopment())
+                {
+                    app.MapOpenApi();
+                }
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+                app.UseMiddleware<CorrelationIdMiddleware>();
+
+                app.UseHttpsRedirection();
+
+                app.UseAuthorization();
+
+                //Log HTTP requests/responses
+                //app.UseSerilogRequestLogging(options =>
+                //{
+                //    options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+                //    {
+                //        if (httpContext.Items.TryGetValue("X-Correlation-ID", out var correlationId))
+                //        {
+                //            diagnosticContext.Set("CorrelationId", correlationId);
+                //        }
+                //    };
+                //});
+                app.UseSerilogRequestLogging();
+
+                app.MapControllers();
+
+                app.MapGet("/", () => "Catalog API up and running.");
+
+                app.Run();
+            }
+            catch (Exception ex)
             {
-                app.MapOpenApi();
+                Log.Fatal(ex, "Application start-up failed");
+            }
+            finally
+            {
+                Log.CloseAndFlush();
             }
 
-            app.UseHttpsRedirection();
-
-            app.UseAuthorization();
-
-
-            app.MapControllers();
-
-            app.MapGet("/", () => "Catalog API up and running.");
-
-            app.Run();
         }
     }
 }
