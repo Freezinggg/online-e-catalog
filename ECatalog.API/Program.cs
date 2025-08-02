@@ -1,5 +1,8 @@
 
 using ECatalog.API.Middleware;
+using ECatalog.Application;
+using ECatalog.Application.Interfaces;
+using ECatalog.Infrastructure.Persistence;
 using ECatalog.Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -33,7 +36,7 @@ namespace ECatalog.API
                         .MinimumLevel.Override("Microsoft", LogEventLevel.Information) // <-- Important: Allow hosting logs
                         .MinimumLevel.Override("System", LogEventLevel.Warning)
                         .MinimumLevel.Information()
-                        .WriteTo.Console(new RenderedCompactJsonFormatter())
+                        //.WriteTo.Console(new RenderedCompactJsonFormatter())
                         .WriteTo.Seq("http://localhost:5341")
                         .WriteTo.File(
                             new RenderedCompactJsonFormatter(),
@@ -59,6 +62,9 @@ namespace ECatalog.API
                 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
                 builder.Services.AddOpenApi();
 
+                builder.Services.AddScoped<ICatalogService, CatalogService>();
+                builder.Services.AddScoped<ICatalogRepository, CatalogRepository>();
+
                 var app = builder.Build();
 
                 // Configure the HTTP request pipeline.
@@ -72,18 +78,6 @@ namespace ECatalog.API
                 app.UseHttpsRedirection();
 
                 app.UseAuthorization();
-
-                //Log HTTP requests/responses
-                //app.UseSerilogRequestLogging(options =>
-                //{
-                //    options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
-                //    {
-                //        if (httpContext.Items.TryGetValue("X-Correlation-ID", out var correlationId))
-                //        {
-                //            diagnosticContext.Set("CorrelationId", correlationId);
-                //        }
-                //    };
-                //});
                 app.UseSerilogRequestLogging();
 
                 app.MapControllers();

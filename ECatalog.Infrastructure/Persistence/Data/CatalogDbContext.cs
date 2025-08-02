@@ -22,11 +22,9 @@ namespace ECatalog.Infrastructure.Persistence.Data
                 entity.HasKey(x => x.Id);
                 entity.Property(x => x.Id).IsRequired();
                 entity.Property(x => x.Name).IsRequired();
-
-                entity.Property(x => x.Name).IsRequired();
-                entity.Property(x => x.Description).IsRequired();
+                entity.Property(x => x.Description).IsRequired().HasColumnType("text");
+                entity.Property(x => x.ImageUrl).IsRequired().HasColumnType("text");
                 entity.Property(x => x.CreateTime);
-                entity.Property(x => x.ImageUrl).IsRequired();
             });
         }
     }
