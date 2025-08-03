@@ -1,0 +1,31 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    image: online-catalog-api
+    container_name: ecatalog-api
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=CatalogDb;Username=postgres;Password=secret
+    depends_on:
+      - db
+
+  db:
+    image: postgres:12
+    container_name: ecatalog-db
+    environment:
+      POSTGRES_DB: CatalogDb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  pgdata:

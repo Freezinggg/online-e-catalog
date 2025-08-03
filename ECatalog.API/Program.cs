@@ -84,6 +84,13 @@ namespace ECatalog.API
 
                 app.MapGet("/", () => "Catalog API up and running.");
 
+                
+                using (var scope = app.Services.CreateScope())
+                {
+                    var db = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
+                    db.Database.Migrate();
+                }
+                
                 app.Run();
             }
             catch (Exception ex)
