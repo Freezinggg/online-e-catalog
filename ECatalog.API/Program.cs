@@ -5,6 +5,7 @@ using ECatalog.Application.Interfaces;
 using ECatalog.Infrastructure.Persistence;
 using ECatalog.Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
@@ -65,6 +66,13 @@ namespace ECatalog.API
                 builder.Services.AddScoped<ICatalogService, CatalogService>();
                 builder.Services.AddScoped<ICatalogRepository, CatalogRepository>();
 
+                builder.Services.AddHealthChecks()
+                .AddNpgSql(
+                    builder.Configuration.GetConnectionString("DefaultConnection")!,
+                    name: "postgresql",
+                    failureStatus: HealthStatus.Degraded
+                );
+
                 var app = builder.Build();
 
                 // Configure the HTTP request pipeline.
@@ -83,14 +91,16 @@ namespace ECatalog.API
                 app.MapControllers();
 
                 app.MapGet("/", () => "Catalog API up and running.");
+                app.MapHealthChecks("/health");
 
-                
                 using (var scope = app.Services.CreateScope())
                 {
                     var db = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
                     db.Database.Migrate();
                 }
+
                 
+
                 app.Run();
             }
             catch (Exception ex)
