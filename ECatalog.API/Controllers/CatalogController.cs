@@ -3,6 +3,7 @@ using ECatalog.Application.Common;
 using ECatalog.Application.DTO;
 using ECatalog.Application.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ECatalog.API.Controllers
@@ -11,11 +12,13 @@ namespace ECatalog.API.Controllers
     [ApiController]
     public class CatalogController : ControllerBase
     {
+        private readonly ILogger<CatalogController> _logger;
         private readonly ICatalogService _catalogService;
 
-        public CatalogController(ICatalogService catalogService)
+        public CatalogController(ICatalogService catalogService, ILogger<CatalogController> logger)
         {
             _catalogService = catalogService;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -24,11 +27,13 @@ namespace ECatalog.API.Controllers
             try
             {
                 Result<IEnumerable<CatalogItemDTO>> result = await _catalogService.GetAllAsync();
-                return Ok(result.Data);
+                //return Ok(result.Data);
+                return Ok(ApiResponse<IEnumerable<CatalogItemDTO>>.Ok(result.Data));
             }
-            catch
+            catch (Exception ex)
             {
-                return StatusCode(500, "Internal Server Error.");
+                _logger.LogError(ex, "Error Get All Catalog");
+                return StatusCode(500, ApiResponse<object>.Fail("Get all catalog error, internal server problem."));
             }
         }
 
@@ -38,11 +43,12 @@ namespace ECatalog.API.Controllers
             try
             {
                 Result<CatalogItemDTO?> result = await _catalogService.GetByIdAsync(id);
-                return result.IsSuccess ? Ok(result.Data) : NotFound(result.ErrorMessage);
+                return result.IsSuccess ? Ok(ApiResponse<CatalogItemDTO?>.Ok(result.Data)) : NotFound(ApiResponse<CatalogItemDTO?>.Fail(result.ErrorMessage));
             }
-            catch
+            catch (Exception ex)
             {
-                return StatusCode(500, "Internal Server Error.");
+                _logger.LogError(ex, "Error Get Catalog by Id");
+                return StatusCode(500, ApiResponse<object>.Fail("Get catalog error, internal server problem."));
             }
         }
 
@@ -52,11 +58,12 @@ namespace ECatalog.API.Controllers
             try
             {
                 Result<CatalogItemDTO?> result = await _catalogService.CreateAsync(parameter);
-                return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Data.Id }, result.Data) : BadRequest(result.ErrorMessage);
+                return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Data.Id }, ApiResponse<Guid>.Ok(result.Data.Id)) : BadRequest(ApiResponse<Guid>.Fail(result.ErrorMessage));
             }
-            catch
+            catch (Exception ex)
             {
-                return StatusCode(500, "Internal Server Error.");
+                _logger.LogError(ex, "Error Create Catalog");
+                return StatusCode(500, ApiResponse<object>.Fail("Creating catalog error, internal server problem."));
             }
         }
 
@@ -72,14 +79,15 @@ namespace ECatalog.API.Controllers
                     if (result.IsNotFound)
                         return NotFound("Catalog doesnt exist.");
 
-                    return result.IsSuccess ? Ok("Update success.") : BadRequest(result.ErrorMessage);
+                    return result.IsSuccess ? Ok(ApiResponse<object>.Ok("Update catalog success.")) : BadRequest(ApiResponse<object>.Fail(result.ErrorMessage));
                 }
                 else
-                    return BadRequest("Cannot process update, invalid request.");
+                    return BadRequest(ApiResponse<object>.Fail("Cannot process update, invalid request."));
             }
-            catch
+            catch(Exception ex)
             {
-                return StatusCode(500, "Internal Server Error.");
+                _logger.LogError(ex, "Error Update Catalog");
+                return StatusCode(500, ApiResponse<object>.Fail("Creating catalog error, internal server problem."));
             }
         }
 
@@ -88,9 +96,9 @@ namespace ECatalog.API.Controllers
         {
             Result<bool> result = await _catalogService.DeleteAsync(id);
             if (result.IsNotFound)
-                return NotFound("Catalog doesnt exist.");
+                return NotFound(ApiResponse<object>.Fail("Error deleting catalog."));
 
-            return result.IsSuccess ? Ok("Delete success.") : StatusCode(500, result.ErrorMessage);
+            return result.IsSuccess ? Ok(ApiResponse<object>.Ok("Delete catalog success.")) : StatusCode(500, ApiResponse<object>.Fail(result.ErrorMessage));
         }
 
     }

@@ -6,6 +6,7 @@ using ECatalog.Infrastructure.Persistence;
 using ECatalog.Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Prometheus;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
@@ -85,10 +86,13 @@ namespace ECatalog.API
 
                 app.UseHttpsRedirection();
 
+                app.UseHttpMetrics();
+
                 app.UseAuthorization();
                 app.UseSerilogRequestLogging();
 
                 app.MapControllers();
+                app.MapMetrics();
 
                 app.MapGet("/", () => "Catalog API up and running.");
                 app.MapHealthChecks("/health");
