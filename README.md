@@ -24,6 +24,6 @@ This is a real-world project as part of my Back-End Developer journey — aiming
 - [x] Day 3 – Logging with Serilog + Seq // Done at 01-August-2025
 - [x] Day 4 – Basic Product CRUD // Done at 02-August-2025
 - [x] Day 5 – Dockerization // Done at 03-August-2025
-- [ ] Day 6 – Metrics / Health Checks / Readiness
+- [x] Day 6 – Metrics / Health Checks / Readiness //Done at 04-August-2025
 - [ ] Day 7 – GitHub Actions CI/CD
 - [ ] Day 8+ – TBD (JWT, React UI, Auth, DDD refinements)
