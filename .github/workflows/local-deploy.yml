@@ -52,11 +52,12 @@ jobs:
     - name: Build Docker image
       run: docker build -t online-ecatalog .
 
-    - name: Stop and remove previous container (PowerShell)
+    - name: Stop and remove previous container (PowerShell-safe)
+      continue-on-error: true
       run: |
-        docker stop online-ecatalog 2>$null
-        docker rm online-ecatalog 2>$null
+        docker stop onlineecatalog 2>$null
+        docker rm onlineecatalog 2>$null
       shell: pwsh
 
     - name: Run Docker container
-      run: docker run -d -p 8080:80 --name online-ecatalog online-ecatalog
+      run: docker run -d -p 8080:80 --name onlineecatalog online-ecatalog
