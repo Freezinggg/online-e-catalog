@@ -12,14 +12,17 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up .NET
+    - name: Set up .NET SDK
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '9.0.x'
         install-dir: './.dotnet'
+        include-prerelease: true
 
-    - name: Add dotnet to PATH
-      run: echo "$PWD/.dotnet" | Out-File -Append -Encoding ascii $env:GITHUB_PATH
+    - name: Add .NET to PATH manually
+      run: |
+        echo "$PWD/.dotnet" | Out-File -Append -Encoding ascii $env:GITHUB_PATH
+        echo "DOTNET_ROOT=$PWD/.dotnet" | Out-File -Append -Encoding ascii $env:GITHUB_ENV
       shell: pwsh
 
     - name: Restore dependencies
