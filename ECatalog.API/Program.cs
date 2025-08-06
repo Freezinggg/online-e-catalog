@@ -103,7 +103,7 @@ namespace ECatalog.API
                     db.Database.Migrate();
                 }
 
-                
+                // CI/CD local test - Aug 6
 
                 app.Run();
             }
