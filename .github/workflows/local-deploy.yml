@@ -12,12 +12,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up .NET SDK
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '9.0.x'
-        install-dir: './.dotnet'
-        include-prerelease: true
+    - name: Manually install .NET 9 SDK
+      run: |
+        curl -L https://dot.net/v1/dotnet-install.ps1 -o install-dotnet.ps1
+        pwsh ./install-dotnet.ps1 -Version 9.0.100 -InstallDir "$PWD/.dotnet"
+      shell: pwsh
 
     - name: Add .NET to PATH manually
       run: |
