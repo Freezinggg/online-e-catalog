@@ -12,13 +12,18 @@ jobs:
       HOME: D:\Work\ECatalog\OnlineECatalog\actions-runner
 
     steps:
-    - name: Configure Git safe.directory manually
+    - name: Manually mark directory as safe
       run: |
-        git config --global --add safe.directory $GITHUB_WORKSPACE
-        git config --global --add safe.directory "${{ github.workspace }}"
+        git config --global --add safe.directory "D:/Work/ECatalog/OnlineECatalog/actions-runner/_work/online-e-catalog/online-e-catalog"
 
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - name: Manual git init
+      run: |
+        cd $env:GITHUB_WORKSPACE
+        git init
+        git remote add origin https://github.com/Freezinggg/online-e-catalog.git
+        git fetch origin main
+        git checkout main
+      shell: pwsh
 
     - name: Install .NET 9 manually
       run: |
