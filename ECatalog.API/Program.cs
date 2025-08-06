@@ -74,6 +74,10 @@ namespace ECatalog.API
                     failureStatus: HealthStatus.Degraded
                 );
 
+                //swagger
+                builder.Services.AddEndpointsApiExplorer();
+                builder.Services.AddSwaggerGen();
+
                 var app = builder.Build();
 
                 // Configure the HTTP request pipeline.
@@ -104,6 +108,8 @@ namespace ECatalog.API
                 }
 
                 // CI/CD local test - Aug 6
+                app.UseSwagger();
+                app.UseSwaggerUI();
 
                 app.Run();
             }
