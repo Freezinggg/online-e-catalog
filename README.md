@@ -38,5 +38,6 @@ This is a real-world project as part of my Back-End Developer journey — aiming
 - [x] Day 5 – Dockerization // Done at 03-August-2025
 - [x] Day 6 – Health Checks / Readiness //Done at 04-August-2025
 - [x] Day 7 - Prometheus metrics + ApiResponse pattern //Done at 05-August-2025
-- [ ] Day 8 – GitHub Actions CI/CD
-- [ ] Day 9+ – TBD (JWT, React UI, Auth, DDD refinements)
+- [x] Day 8 – GitHub Actions CI/CD //Done at 06-August-2025
+- [x] Day 9 – Pagination //Done at 12-August-2025
+- [ ] TBD (JWT, React UI, Auth, DDD refinements)
