@@ -69,24 +69,43 @@ namespace ECatalog.Application
             }
         }
 
-        public async Task<Result<IEnumerable<CatalogItemDTO>>> GetAllAsync()
+        public async Task<Result<PagedResult<CatalogItemDTO>>> GetAllAsync(int? page = null, int? pageSize = null, string? filter = null)
         {
-            List<CatalogItemDTO> catalogItemDTOs = new();
-            IEnumerable<CatalogItem> result = await _repo.GetAllAsync();
-            foreach (CatalogItem item in result)
+            var pagedResult = await _repo.GetAllAsync(page, pageSize, filter);
+            IEnumerable<CatalogItemDTO> catalogItemsDTO = pagedResult.Items.Select(x => new CatalogItemDTO
             {
-                catalogItemDTOs.Add(new CatalogItemDTO()
-                {
-                    Id = item.Id,
-                    Name = item.Name,
-                    Description = item.Description,
-                    ImageUrl = item.ImageUrl,
-                    InStock = item.InStock
-                });
-            }
+                Id = x.Id,
+                Name = x.Name,
+                Description = x.Description,
+                ImageUrl = x.ImageUrl,
+                InStock = x.InStock
+            });
 
-            return Result<IEnumerable<CatalogItemDTO>>.Success(catalogItemDTOs);
+            PagedResult<CatalogItemDTO> result = new(catalogItemsDTO, pagedResult.TotalCount);
+
+            return Result<PagedResult<CatalogItemDTO>>.Success(result);
         }
+
+        //public async Task<Result<IEnumerable<CatalogItemDTO>>> GetAllAsync()
+        //{
+        //    List<CatalogItemDTO> catalogItemDTOs = new();
+        //    IEnumerable<CatalogItem> result = await _repo.GetAllAsync();
+        //    foreach (CatalogItem item in result)
+        //    {
+        //        catalogItemDTOs.Add(new CatalogItemDTO()
+        //        {
+        //            Id = item.Id,
+        //            Name = item.Name,
+        //            Description = item.Description,
+        //            ImageUrl = item.ImageUrl,
+        //            InStock = item.InStock
+        //        });
+        //    }
+
+        //    return Result<IEnumerable<CatalogItemDTO>>.Success(catalogItemDTOs);
+        //}
+
+
 
         public async Task<Result<CatalogItemDTO?>> GetByIdAsync(Guid id)
         {

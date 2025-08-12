@@ -12,7 +12,8 @@ namespace ECatalog.Application.Interfaces
 {
     public interface ICatalogService
     {
-        Task<Result<IEnumerable<CatalogItemDTO>>> GetAllAsync();
+        Task<Result<PagedResult<CatalogItemDTO>>> GetAllAsync(int? page = null, int? pageSize = null, string? filter = null);
+        //Task<PagedResult<CatalogItem>> GetAllAsync(int? page = null, int? pageSize = null, string? filter = null);
         Task<Result<CatalogItemDTO?>> GetByIdAsync(Guid id);
         Task<Result<CatalogItemDTO>> CreateAsync(CreateCatalogItemDTO dto);
         Task<Result<bool>> UpdateAsync(UpdateCatalogItemDTO dto);

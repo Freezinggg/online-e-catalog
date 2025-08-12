@@ -22,13 +22,12 @@ namespace ECatalog.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(int page = 1, int pageSize = 10, string? filter = null)
         {
             try
             {
-                Result<IEnumerable<CatalogItemDTO>> result = await _catalogService.GetAllAsync();
-                //return Ok(result.Data);
-                return Ok(ApiResponse<IEnumerable<CatalogItemDTO>>.Ok(result.Data));
+                var result = await _catalogService.GetAllAsync(page, pageSize, filter);
+                return Ok(ApiResponse<PagedResult<CatalogItemDTO>>.Ok(result.Data));
             }
             catch (Exception ex)
             {

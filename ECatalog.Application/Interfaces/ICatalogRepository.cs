@@ -1,4 +1,5 @@
-﻿using ECatalog.Domain.Entities;
+﻿using ECatalog.Application.Common;
+using ECatalog.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,8 @@ namespace ECatalog.Application.Interfaces
 {
     public interface ICatalogRepository
     {
-        Task<IEnumerable<CatalogItem>> GetAllAsync();
+        //Task<IEnumerable<CatalogItem>> GetAllAsync();
+        Task<PagedResult<CatalogItem>> GetAllAsync(int? page = null, int? pageSize = null, string? filter = null);
         Task<CatalogItem?> GetByIdAsync(Guid id);
         Task<CatalogItem?> CreateAsync(CatalogItem item);
         Task<bool> UpdateAsync(CatalogItem item);
